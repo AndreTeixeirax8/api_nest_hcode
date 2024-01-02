@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user..dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateUserDto } from './dtos/update-user.dto';
@@ -40,6 +40,15 @@ export class UserService {
 
     return await this.prismaService.users.update({
       data: data,
+      where: { id },
+    });
+  }
+
+  async delete(id: number) {
+    if (!(await this.show(id))) {
+      throw new NotFoundException('Usuario não encotrado');
+    }
+    return this.prismaService.users.delete({
       where: { id },
     });
   }
