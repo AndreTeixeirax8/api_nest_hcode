@@ -23,17 +23,20 @@ export class UserController {
 
   @Get()
   async read() {
-    return { users: [] };
+    return this.userService.list();
   }
 
   @Get(':id')
   async readOne(@Param('id', ParseIntPipe) id: number) {
-    return { users: {}, id };
+    return this.userService.show(id);
   }
 
   @Put(':id')
-  async update(@Body() body: UpdateUserDto, @Param() params) {
-    return { body };
+  async update(
+    @Body() body: UpdateUserDto,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return await this.userService.update(id, body);
   }
 
   @Delete(':id')

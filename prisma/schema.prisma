@@ -12,6 +12,7 @@ model users {
   nome      String?  @db.VarChar(255)
   email     String?  @db.VarChar(255)
   senha     String?  @db.VarChar(255)
+  birthAt   DateTime? @db.Date
   createdat DateTime @default(now()) @db.Timestamp(6)
   updatedat DateTime @default(now()) @db.Timestamp(6)
 }
