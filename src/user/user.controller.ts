@@ -7,11 +7,14 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user..dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { UserService } from './user.service';
+import { LogInterceptor } from 'src/interceptors/log.interceptor';
 
+//@UseInterceptors(LogInterceptor) //dessa forma colocamos o interceptador antes da controller , mas podemos usar ele  de modo global tambem
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
