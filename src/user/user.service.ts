@@ -25,9 +25,14 @@ export class UserService {
   }
 
   async show(id: number) {
-    return this.prismaService.users.findUnique({
+    const user = this.prismaService.users.findUnique({
       where: { id },
     });
+
+    if (!user) {
+      throw new NotFoundException('Usuario não existe');
+    }
+    return user;
   }
 
   async update(id: number, data: UpdateUserDto) {
