@@ -19,3 +19,9 @@ async function bootstrap() {
   console.log('Serviço rodando na porta 3000');
 }
 bootstrap();
+
+/*JWT
+  instalar os modulos 
+  npm i @nestjs/jwt
+
+*/
