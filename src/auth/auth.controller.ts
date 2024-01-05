@@ -32,4 +32,9 @@ export class AuthController {
   async reset(@Body() body: AuthResetDto) {
     return this.authService.reset(body.senha, body.token);
   }
+
+  @Post('me') //rota para verificar de quem é o token
+  async me(@Body() body) {
+    return this.authService.checkToken(body.token);
+  }
 }
