@@ -1,16 +1,34 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { Prisma, users } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { AuthRegisterDto } from './dto/auth-register.dto';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly prisma: PrismaService,
+    private readonly userService: UserService,
   ) {}
 
-  async createToken() {
-    //return this.jwtService.sign();
+  async createToken(user: users) {
+    return {
+      accessToken: this.jwtService.sign(
+        {
+          id: user.id,
+          nome: user.nome,
+          email: user.email,
+        },
+        {
+          expiresIn: '10 days',
+          subject: String(user.id),
+          issuer: 'API NestJS',
+          audience: 'user',
+        },
+      ),
+    };
   }
 
   async checkToken(token: string) {
@@ -28,8 +46,9 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('Email ou Senha incorreto');
     }
-    return user;
+    return this.createToken(user);
   }
+
   async forget(email: string) {
     const user = await this.prisma.users.findFirst({
       where: {
@@ -47,7 +66,7 @@ export class AuthService {
   async reset(senha: string, token: string) {
     //validar o token e ai trocar a senha da pessoa
     const id = 0;
-    await this.prisma.users.update({
+    const user = await this.prisma.users.update({
       where: {
         id,
       },
@@ -56,6 +75,11 @@ export class AuthService {
       },
     });
 
-    return true;
+    return this.createToken(user);
+  }
+
+  async register(data: AuthRegisterDto) {
+    const user = await this.userService.create(data);
+    return this.createToken(user);
   }
 }
