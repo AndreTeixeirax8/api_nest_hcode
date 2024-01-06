@@ -1,10 +1,19 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Headers,
+  UseGuards,
+  Req,
+  Request,
+} from '@nestjs/common';
 import { AuthLoginDto } from './dto/auth-login.dto';
 import { AuthRegisterDto } from './dto/auth-register.dto';
 import { AuthForgetDto } from './dto/auth-forget.dto';
 import { AuthResetDto } from './dto/auth-reset.dto';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
+import { AuthGuard } from 'src/guards/auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -33,8 +42,13 @@ export class AuthController {
     return this.authService.reset(body.senha, body.token);
   }
 
-  @Post('me') //rota para verificar de quem é o token
-  async me(@Body() body) {
-    return this.authService.checkToken(body.token);
+  @UseGuards(AuthGuard)
+  @Post('me')
+  async me(@Req() req) {
+    console.log('controller dados do req');
+    console.log(req); //segue a baixo o valor do req
+
+    const tokenPayload = await req.tokenPayload; // Espera a resolução da Promise
+    return { me: 'ok', data: tokenPayload };
   }
 }
