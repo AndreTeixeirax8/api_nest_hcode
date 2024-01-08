@@ -25,12 +25,12 @@ import { AuthGuard } from 'src/guards/auth.guard';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Roles(Role.Admin)
   @Post()
   async create(@Body() body: CreateUserDto) {
     return await this.userService.create(body);
   }
 
+  @Roles(Role.Admin, Role.User) //regra de quem pode acessar a rota
   @Get()
   async read() {
     return this.userService.list();
