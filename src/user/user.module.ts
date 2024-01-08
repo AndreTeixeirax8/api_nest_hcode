@@ -3,6 +3,7 @@ import {
   Module,
   NestModule,
   RequestMethod,
+  forwardRef,
 } from '@nestjs/common';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
@@ -11,7 +12,8 @@ import { UserIdCheckMiddleware } from 'src/middlewares/user-id-check.middleware'
 import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule],
+  /*essa referencia corrigi dependencia circular , lembrando que ela tem que estar no dois modulos que estão com problemas*/
+  imports: [PrismaModule, forwardRef(() => AuthModule)],
   controllers: [UserController],
   providers: [UserService],
   exports: [UserService],
