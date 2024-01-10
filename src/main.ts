@@ -7,9 +7,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   //protege a api de acessos não autorizados
-  //app.enableCors({
-  //origin:['*'] //aqui definimos quais apis vão pode ter acesso , no caso de * siguifica que está aberto a todos
-  // });
+  app.enableCors({
+    //origin:['*'] //aqui definimos quais apis vão pode ter acesso , no caso de * siguifica que está aberto a todos
+  });
 
   //instalar o npm i --save class-validator class-transformer
   app.useGlobalPipes(new ValidationPipe()); // em seguida adicionar aqui
