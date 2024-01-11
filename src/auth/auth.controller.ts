@@ -10,6 +10,8 @@ import {
   UploadedFile,
   BadRequestException,
   UploadedFiles,
+  ParseFilePipe,
+  FileTypeValidator,
 } from '@nestjs/common';
 import { AuthLoginDto } from './dto/auth-login.dto';
 import { AuthRegisterDto } from './dto/auth-register.dto';
@@ -62,7 +64,50 @@ export class AuthController {
   @UseInterceptors(FileInterceptor('file'))
   @UseGuards(AuthGuard)
   @Post('photo')
-  async uploadPhoto(@User() user, @UploadedFile() photo: Express.Multer.File) {
+  async uploadPhoto(
+    @User() user,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new FileTypeValidator({
+            fileType: 'image/*',
+          }),
+          //new MaxFileSizeValidator({maxSize:22000})//esse valor é em kabytes(Limite do tamanho do arquivo que vai ser enviado)
+        ],
+      }),
+    )
+    photo: Express.Multer.File,
+  ) {
+    const path = join(
+      __dirname,
+      '..',
+      '..',
+      'storage',
+      'photos',
+      `photo-${user.id}.png`,
+    );
+
+    try {
+      this.fileService.upload(photo, path);
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
+
+    return { sucess: true };
+  }
+
+  /*
+  @UseInterceptors(FileInterceptor('file'))
+  @UseGuards(AuthGuard)
+  @Post('photo')
+  async uploadPhoto(
+    @User() user,
+    @UploadedFile()
+    //  new ParseFilePipe({
+    //   validators: [new FileTypeValidator({ fileType: 'image/jpg' })],
+    //  }),
+    photo: Express.Multer.File,
+  ) {
     const path = join(
       __dirname,
       '..',
@@ -79,8 +124,9 @@ export class AuthController {
     }
 
     return { sucess: true };
-  }
+  }*/
 
+  /* teste de envio de varios arquivos juntos
   @UseInterceptors(FilesInterceptor('files'))
   @UseGuards(AuthGuard)
   @Post('files')
@@ -98,5 +144,5 @@ export class AuthController {
     );
 
     return files;
-  }
+  }*/
 }
